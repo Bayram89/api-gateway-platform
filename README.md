@@ -1,12 +1,14 @@
-# Gateway Lab: a self-service API platform
+# API Gateway Learning Lab
 
-A local platform engineering project that exposes two TypeScript services through a governed Kong API gateway. It demonstrates API routing, consumer authentication, rate limiting, correlation IDs, bounded timeouts and retries, metrics, service health, automated testing, and configuration-as-code onboarding.
+I built this project to develop my understanding of API gateways and platform engineering.
 
-> This is a learning project, not a claim to be production-ready. The documentation makes the trade-offs and production gaps explicit.
+My previous projects gave me experience developing and consuming REST APIs with Node.js, Express, and Flask. This project takes the next step: exploring how two backend services can be exposed through a shared gateway with authentication, rate limiting, request IDs, health checks, and basic observability.
+
+The project runs locally with Docker Compose and uses Kong, Prometheus, and Grafana. It is a learning environment rather than a production-ready platform. My goal is to understand some of the responsibilities surrounding APIs after they have been developed.
 
 ## Why this exists
 
-Application developers should be able to publish APIs through a consistent, secure entry point without every team reinventing cross-cutting concerns. In this project, Kong applies shared policies while the domain services remain focused on pets and appointments.
+Most of my earlier API work focused on application endpoints, authentication, and frontend/backend communication. I wanted to learn what happens when multiple APIs need a shared entry point and common rules. In this project, Kong handles those shared rules while the two small services remain focused on their own data.
 
 ```mermaid
 flowchart LR
@@ -19,19 +21,20 @@ flowchart LR
     M --> G[Grafana :3000]
 ```
 
-## Capabilities
+## What I implemented and tested
 
-| Platform concern | Implementation |
+| Area | What I implemented |
 |---|---|
-| One API entry point | Kong routes `/api/pets` and `/api/appointments` |
-| Consumer access | Kong key authentication |
-| Traffic protection | Per-service rate limit of 20 requests/minute |
-| Troubleshooting | `X-Request-ID` plus structured service logs |
-| Reliability | Health checks, bounded timeouts, and limited retries |
-| Observability | Kong and Node.js metrics scraped by Prometheus |
-| Developer experience | OpenAPI contract and configuration-as-code onboarding |
-| Delivery confidence | Unit/API tests and GitHub Actions CI |
-| Operations | Reproducible incident exercise and recovery checks |
+| Routing | Kong directs `/api/pets` and `/api/appointments` to the correct service |
+| Authentication | Requests require a demonstration API key |
+| Rate limiting | Each service permits 20 requests per minute |
+| Request tracking | Kong adds an `X-Request-ID` to proxied requests |
+| Health | Each backend service exposes a health endpoint |
+| Metrics | Prometheus collects metrics from Kong and both services |
+| Visualization | Grafana displays gateway and service request metrics |
+| Testing | API tests check important service responses |
+| Automation | GitHub Actions runs tests, builds the services, and validates Compose |
+| Failure exercise | Stopping one service demonstrates an isolated upstream failure |
 
 ## Run locally
 
@@ -99,4 +102,3 @@ The [architecture notes](docs/architecture.md) explain why the demo uses databas
 - Validate gateway and OpenAPI configuration in CI.
 - Use a shared or intentionally distributed rate-limit policy.
 - Add TLS, network policies, vulnerability scanning, and signed images.
-
