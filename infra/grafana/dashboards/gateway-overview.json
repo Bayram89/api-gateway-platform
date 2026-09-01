@@ -1,0 +1,31 @@
+{
+  "title": "Gateway Lab Overview",
+  "uid": "gateway-lab-overview",
+  "schemaVersion": 41,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Gateway requests by status",
+      "id": 1,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "sum by (code) (rate(kong_http_requests_total[1m]))", "legendFormat": "{{code}}", "refId": "A" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Service request rate",
+      "id": 2,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "sum(rate(pets_http_requests_total[1m]))", "legendFormat": "pets", "refId": "A" },
+        { "expr": "sum(rate(appointments_http_requests_total[1m]))", "legendFormat": "appointments", "refId": "B" }
+      ]
+    }
+  ]
+}
