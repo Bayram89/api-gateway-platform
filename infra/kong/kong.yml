@@ -1,0 +1,61 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: pets-service
+    url: http://pets-service:3001/pets
+    connect_timeout: 3000
+    read_timeout: 5000
+    write_timeout: 5000
+    retries: 2
+    routes:
+      - name: pets-api
+        paths: ["/api/pets"]
+        strip_path: true
+    plugins:
+      - name: key-auth
+        config:
+          key_names: ["apikey"]
+          hide_credentials: true
+      - name: rate-limiting
+        config:
+          minute: 20
+          policy: local
+
+  - name: appointments-service
+    url: http://appointments-service:3002/appointments
+    connect_timeout: 3000
+    read_timeout: 5000
+    write_timeout: 5000
+    retries: 2
+    routes:
+      - name: appointments-api
+        paths: ["/api/appointments"]
+        strip_path: true
+    plugins:
+      - name: key-auth
+        config:
+          key_names: ["apikey"]
+          hide_credentials: true
+      - name: rate-limiting
+        config:
+          minute: 20
+          policy: local
+
+plugins:
+  - name: correlation-id
+    config:
+      header_name: X-Request-ID
+      generator: uuid
+      echo_downstream: true
+  - name: prometheus
+    config:
+      status_code_metrics: true
+      latency_metrics: true
+      upstream_health_metrics: true
+
+consumers:
+  - username: demo-developer
+    keyauth_credentials:
+      - key: demo-api-key
+
