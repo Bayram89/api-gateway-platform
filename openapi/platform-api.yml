@@ -26,6 +26,31 @@ paths:
                     items: { $ref: "#/components/schemas/Pet" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "429": { $ref: "#/components/responses/RateLimited" }
+    post:
+      summary: Create a pet
+      operationId: createPet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/NewPet" }
+      responses:
+        "201":
+          description: Pet created
+          headers:
+            Location:
+              description: Path of the created pet
+              schema: { type: string, example: /pets/3 }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Pet" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
   /api/pets/{id}:
     get:
       summary: Get a pet
@@ -88,11 +113,29 @@ components:
         petId: { type: integer, example: 1 }
         date: { type: string, format: date }
         reason: { type: string }
+    NewPet:
+      type: object
+      required: [name, species]
+      additionalProperties: false
+      properties:
+        name: { type: string, minLength: 1, example: Bella }
+        species: { type: string, minLength: 1, example: dog }
     Error:
       type: object
+      required: [error]
       properties:
-        message: { type: string }
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
   responses:
+    BadRequest:
+      description: Request validation failed
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
     Unauthorized:
       description: Missing or invalid API key
       content:
@@ -105,4 +148,3 @@ components:
           schema: { $ref: "#/components/schemas/Error" }
     NotFound:
       description: Resource not found
-
