@@ -1,13 +1,14 @@
 import express, { type NextFunction, type Request, type Response } from "express";
 import { collectDefaultMetrics, Counter, Registry } from "prom-client";
 
-const pets = [
-  { id: 1, name: "Milo", species: "dog" },
-  { id: 2, name: "Luna", species: "cat" }
-];
+type Pet = { id: number; name: string; species: string };
 
 export function createApp() {
   const app = express();
+  const pets: Pet[] = [
+    { id: 1, name: "Milo", species: "dog" },
+    { id: 2, name: "Luna", species: "cat" }
+  ];
   const registry = new Registry();
   collectDefaultMetrics({ register: registry, prefix: "pets_" });
   const requests = new Counter({
@@ -37,6 +38,20 @@ export function createApp() {
 
   app.get("/health", (_req, res) => res.json({ status: "ok", service: "pets-service" }));
   app.get("/pets", (_req, res) => res.json({ data: pets }));
+  app.post("/pets", (req, res) => {
+    const name = typeof req.body.name === "string" ? req.body.name.trim() : "";
+    const species = typeof req.body.species === "string" ? req.body.species.trim().toLowerCase() : "";
+
+    if (!name || !species) {
+      return res.status(400).json({
+        error: { code: "INVALID_PET", message: "Name and species are required" }
+      });
+    }
+
+    const pet: Pet = { id: Math.max(...pets.map((item) => item.id)) + 1, name, species };
+    pets.push(pet);
+    return res.status(201).location(`/pets/${pet.id}`).json({ data: pet });
+  });
   app.get("/pets/:id", (req, res) => {
     const pet = pets.find((item) => item.id === Number(req.params.id));
     if (!pet) return res.status(404).json({ error: { code: "PET_NOT_FOUND", message: "Pet not found" } });
@@ -52,4 +67,3 @@ export function createApp() {
   });
   return app;
 }
-

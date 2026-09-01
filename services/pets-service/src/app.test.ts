@@ -14,5 +14,21 @@ describe("pets service", () => {
     expect(response.status).toBe(404);
     expect(response.body.error.code).toBe("PET_NOT_FOUND");
   });
-});
 
+  it("creates a pet from valid input", async () => {
+    const response = await request(createApp())
+      .post("/pets")
+      .send({ name: "  Bella  ", species: "DOG" });
+
+    expect(response.status).toBe(201);
+    expect(response.headers.location).toBe("/pets/3");
+    expect(response.body.data).toEqual({ id: 3, name: "Bella", species: "dog" });
+  });
+
+  it("rejects a pet without a species", async () => {
+    const response = await request(createApp()).post("/pets").send({ name: "Bella" });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe("INVALID_PET");
+  });
+});
