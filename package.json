@@ -1,0 +1,14 @@
+{
+  "name": "api-gateway-platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["services/*"],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "dev:pets": "npm run dev --workspace @gateway-lab/pets-service",
+    "dev:appointments": "npm run dev --workspace @gateway-lab/appointments-service"
+  },
+  "engines": { "node": ">=20" }
+}
+
