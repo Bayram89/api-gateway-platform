@@ -1,0 +1,108 @@
+openapi: 3.1.0
+info:
+  title: Gateway Lab API
+  version: 1.0.0
+  description: Two example domain APIs exposed through one governed gateway.
+servers:
+  - url: http://localhost:8000
+security:
+  - ApiKey: []
+paths:
+  /api/pets:
+    get:
+      summary: List pets
+      operationId: listPets
+      responses:
+        "200":
+          description: Pet collection
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Pet" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+  /api/pets/{id}:
+    get:
+      summary: Get a pet
+      operationId: getPet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: A pet
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Pet" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/appointments:
+    get:
+      summary: List appointments
+      operationId: listAppointments
+      parameters:
+        - name: petId
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Appointment collection
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Appointment" }
+components:
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: apikey
+  schemas:
+    Pet:
+      type: object
+      required: [id, name, species]
+      properties:
+        id: { type: integer, example: 1 }
+        name: { type: string, example: Milo }
+        species: { type: string, example: dog }
+    Appointment:
+      type: object
+      required: [id, petId, date, reason]
+      properties:
+        id: { type: integer, example: 101 }
+        petId: { type: integer, example: 1 }
+        date: { type: string, format: date }
+        reason: { type: string }
+    Error:
+      type: object
+      properties:
+        message: { type: string }
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    RateLimited:
+      description: Request quota exceeded
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: Resource not found
+
