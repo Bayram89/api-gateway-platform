@@ -52,6 +52,18 @@ Call an API through the gateway:
 Invoke-RestMethod http://localhost:8000/api/pets -Headers @{ apikey = "demo-api-key" }
 ```
 
+Create a pet through the same gateway route:
+
+```powershell
+Invoke-RestMethod http://localhost:8000/api/pets `
+  -Method Post `
+  -Headers @{ apikey = "demo-api-key" } `
+  -ContentType "application/json" `
+  -Body '{"name":"Bella","species":"dog"}'
+```
+
+Pet and appointment data is stored in memory to keep the project focused on the gateway. Restarting a service resets its data.
+
 Useful local endpoints:
 
 - Kong proxy: `http://localhost:8000`
@@ -88,6 +100,8 @@ npm test
 npm run build
 ```
 
+The service tests cover health responses, missing resources, valid pet creation, and invalid input. The smoke test checks authentication, request IDs, both gateway routes, and a write request through Kong.
+
 ## Learning and engineering decisions
 
 The [learning notes](docs/learning-notes.md) record what I learned and problems encountered during the Docker build, rate-limit test, and upstream failure exercise. The [architecture notes](docs/architecture.md) explain why the demo uses database-less Kong, API keys, local rate limiting, and in-memory data.
@@ -97,6 +111,14 @@ The repository also contains an [API onboarding exercise](docs/onboarding-a-serv
 ## Development approach
 
 I developed this repository as a guided learning exercise using documentation and AI-assisted development. I ran and verified the system locally, tested its gateway behavior, investigated build problems, and documented the concepts I am learning. I am continuing to study and modify the project so I can explain its request flow and design decisions clearly.
+
+## Exercises for continuing the learning
+
+- Follow one `GET /api/pets` request from Kong to the pets-service log using `X-Request-ID`.
+- Change the rate limit, rebuild the environment, and confirm when responses change to `429`.
+- Add another field to a pet and update its TypeScript type, validation, tests, and OpenAPI schema.
+- Stop one backend service, inspect the gateway response, and restore the service.
+- Find the gateway and service request counters in Prometheus and relate them to the Grafana panels.
 
 ## What I would explore next
 
