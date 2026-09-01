@@ -88,17 +88,19 @@ npm test
 npm run build
 ```
 
-## Engineering decisions and learning
+## Learning and engineering decisions
 
-The [architecture notes](docs/architecture.md) explain why the demo uses database-less Kong, API keys, local rate limiting, and in-memory domain data. The [self-service guide](docs/onboarding-a-service.md) shows how another team would propose an API as code. The [incident runbook](docs/incident-runbook.md) turns an upstream failure into a structured troubleshooting exercise.
+The [learning notes](docs/learning-notes.md) record what I learned and problems encountered during the Docker build, rate-limit test, and upstream failure exercise. The [architecture notes](docs/architecture.md) explain why the demo uses database-less Kong, API keys, local rate limiting, and in-memory data.
 
-## Production improvements
+The repository also contains an [API onboarding exercise](docs/onboarding-a-service.md) and an [incident runbook](docs/incident-runbook.md). These are practice documents created to help me think about how another developer would use the gateway and how I would investigate a failure.
 
-- Replace demo API keys with an identity-provider-backed OAuth/OIDC flow.
-- Store credentials in a secret manager and rotate them.
-- Run multiple gateway and service instances on Kubernetes.
-- Use distributed tracing through OpenTelemetry.
-- Add SLO-based alerts for error rate and latency.
-- Validate gateway and OpenAPI configuration in CI.
-- Use a shared or intentionally distributed rate-limit policy.
-- Add TLS, network policies, vulnerability scanning, and signed images.
+## Development approach
+
+I developed this repository as a guided learning exercise using documentation and AI-assisted development. I ran and verified the system locally, tested its gateway behavior, investigated build problems, and documented the concepts I am learning. I am continuing to study and modify the project so I can explain its request flow and design decisions clearly.
+
+## What I would explore next
+
+- Learn how OAuth 2.0 and OpenID Connect differ from the demonstration API key.
+- Add OpenTelemetry tracing to follow a request through the gateway and services.
+- Run the platform on a local Kubernetes cluster after becoming comfortable with the Docker version.
+- Add a simple alert for sustained errors or slow responses.
