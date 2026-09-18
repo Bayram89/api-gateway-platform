@@ -1,4 +1,4 @@
-# API Gateway Learning Lab
+API Gateway Platform Lab
 
 I built this project to develop my understanding of API gateways and platform engineering.
 
