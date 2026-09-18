@@ -1,14 +1,25 @@
-API Gateway Platform Lab
+# API Gateway Platform Lab
 
-I built this project to develop my understanding of API gateways and platform engineering.
+This project extends my existing REST API experience into API gateway and platform engineering. It brings two TypeScript/Express services behind a shared Kong gateway and applies authentication, rate limiting, request correlation, health checks and basic observability.
 
-My previous projects gave me experience developing and consuming REST APIs with Node.js, Express, and Flask. This project takes the next step: exploring how two backend services can be exposed through a shared gateway with authentication, rate limiting, request IDs, health checks, and basic observability.
-
-The project runs locally with Docker Compose and uses Kong, Prometheus, and Grafana. It is a learning environment rather than a production-ready platform. My goal is to understand some of the responsibilities surrounding APIs after they have been developed.
+The platform runs locally with Docker Compose and uses Prometheus and Grafana for metrics and monitoring. Its scope is intentionally focused on gaining practical experience with how APIs are routed, protected, monitored and troubleshot after development.
 
 ## Why this exists
 
-Most of my earlier API work focused on application endpoints, authentication, and frontend/backend communication. I wanted to learn what happens when multiple APIs need a shared entry point and common rules. In this project, Kong handles those shared rules while the two small services remain focused on their own data.
+My earlier API work focused on application endpoints, authentication and frontend/backend communication. This project extends that to the gateway layer, where multiple services share a single entry point and consistent policies.
+
+Kong centralizes routing, API-key authentication, rate limiting and request IDs, allowing the pets and appointments services to remain focused on their domain responsibilities. Prometheus collects metrics from the platform, while Grafana provides a visual overview.
+
+```mermaid
+flowchart LR
+    C[Consumer] --> K[Kong :8000]
+    K --> P[Pets API]
+    K --> A[Appointments API]
+    K --> M[Prometheus :9090]
+    P --> M
+    A --> M
+    M --> G[Grafana :3000]
+```
 
 ```mermaid
 flowchart LR
